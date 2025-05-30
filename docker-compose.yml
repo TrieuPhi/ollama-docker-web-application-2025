@@ -3,13 +3,28 @@ services:
     build:
       context: ./ollama
       dockerfile: Dockerfile
-    image: ollama-server   
+    # image: ollama-server   
     ports:
       - "11434:11434"
     networks:
       - my-net
     container_name: ollama-server
     entrypoint: ["sh","/pull-qwen.sh"]
+
+  fastapi:
+    build:
+      context: ./fastapi
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - my-net
+    container_name: fastapi-app
+    depends_on:
+      - ollama-server
+    environment:
+      - OLLAMA_HOST=ollama-server
+      - OLLAMA_PORT=11434
 
 networks:
   my-net: 
